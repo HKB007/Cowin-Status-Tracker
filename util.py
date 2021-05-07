@@ -1,5 +1,6 @@
 from datetime import date
 from os import getenv
+from sys import exit
 from time import sleep
 
 import requests
@@ -13,6 +14,11 @@ accountSid = getenv('accountSID')
 authToken = getenv('authToken')
 myTwilioNumber = getenv('myTwilioNumber')
 destCellPhone = getenv('destNumber')
+
+if not accountSid or not authToken or not myTwilioNumber or not destCellPhone:
+    print('Invalid "secrets.env". Please verify and try again.')
+    exit(1)
+
 twilioClient = Client(accountSid, authToken)
 
 
@@ -22,7 +28,8 @@ def scan(home, params, sendmsg=False):
             try:
                 params['date'] = date.today().strftime('%d-%m-%y')
 
-                r = requests.get(home, params=params)
+                user_agent = {'User-Agent': 'Mozilla/5.0'}
+                r = requests.get(home, params=params, headers=user_agent)
                 js = r.json()
                 centers = js['centers']
 
@@ -46,8 +53,8 @@ def scan(home, params, sendmsg=False):
                 raise KeyboardInterrupt()
 
             except:
-                print(f'ERROR: Invalid PIN Code / Request Limit Reached')
-                print(f'Sleeping for {TIMEOUT} seconds...\n')
+                print(f'ERROR: Invalid PIN Code / District Name / Request Limit Reached')
+                print(f'Sleeping for {TIMEOUT} seconds...')
                 sleep(TIMEOUT)
 
     except KeyboardInterrupt:
@@ -55,4 +62,5 @@ def scan(home, params, sendmsg=False):
 
 
 def send_message(msg):
-    twilioClient.messages.create(body=msg, from_=myTwilioNumber, to=destCellPhone)
+    twilioClient.messages.create(
+        body=msg, from_=myTwilioNumber, to=destCellPhone)

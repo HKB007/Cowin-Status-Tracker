@@ -23,7 +23,7 @@ Note:
     For *nix:
     `python3 district.py 'East Delhi'`
 
-* --sms is optional. Use this flag to enable sms notifications.
+* `--sms` is optional. Use this flag to enable sms notifications.
 
 These script will fetch status automatically every 5 minutes and display it on terminal. To exit the script, just press `Ctrl + C`.
 
@@ -37,7 +37,7 @@ These script will fetch status automatically every 5 minutes and display it on t
 accountSID = your-account-sid
 authToken = your-auth-token
 myTwilioNumber = your-twilio-generated-phone-number
-destNumber = your-personal-registered-number
+destNumber = your-personal-registered-number-with-country-code
 ```
 SMS will be sent to your registered phone number if `--sms` flag is set and slots are available.
 
