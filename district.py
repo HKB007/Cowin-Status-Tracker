@@ -1,54 +1,37 @@
-from datetime import date
-from sys import argv, exit
-from time import sleep
+from argparse import ArgumentParser
 import json
+from sys import exit
 
-import requests
+from util import scan
 
-with open('dist_map.json', 'r', encoding='utf8') as fp:
-    MAP = json.load(fp)
-    
-DISTRICT = argv[1]
-DIST_ID = MAP.get(DISTRICT.lower(), None)
-TIMEOUT = 600
-HOME = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict'
 
-if DIST_ID is None:
-    print('Invalid District Name... Please cross check from dist_map.json')
-    exit(0)
+def parseArguments():
+    parser = ArgumentParser(allow_abbrev=False)
+    parser.add_argument('districtname', type=str,
+                        help='District name to search for')
+    parser.add_argument('--sms', required=False, action='store_true',
+                        help='Use this flag to enable sms alerts')
+    return parser.parse_args()
 
-params = {'district_id': DIST_ID}
 
-try:
-    while True:
-        try:
-            params['date'] = date.today().strftime('%d-%m-%y')
+def main():
+    args = parseArguments()
+    DISTRICT = args.districtname
+    SMS_ENABLE = args.sms
 
-            r = requests.get(HOME, params=params)
-            js = r.json()
-            centers = js['centers']
+    with open('dist_map.json', 'r', encoding='utf8') as fp:
+        MAP = json.load(fp)
 
-            flag = False
-            for center in centers:
-                for session in center['sessions']:
-                    if session['min_age_limit'] == 18 and session['available_capacity'] > 0:
-                        print(
-                            f"{session['available_capacity']} {session['vaccine']} vaccines available in {center['name']} ({center['pincode']}) on {session['date']}")
-                        flag = True
+    DIST_ID = MAP.get(DISTRICT.lower(), None)
+    if DIST_ID is None:
+        print('Invalid District Name... Please cross check from dist_map.json')
+        exit(1)
 
-            if not flag:
-                print('No vaccination session found')
+    HOME = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict'
 
-            print(f'Sleeping for {TIMEOUT} seconds...')
-            sleep(TIMEOUT)
+    params = {'district_id': DIST_ID}
+    scan(HOME, params, sendmsg=SMS_ENABLE)
 
-        except KeyboardInterrupt:
-            raise KeyboardInterrupt()
 
-        except:
-            print('Some error occured')
-            print(f'Sleeping for {TIMEOUT} seconds...\n')
-            sleep(TIMEOUT)
-
-except KeyboardInterrupt:
-    print('Exiting...')
+if __name__ == '__main__':
+    main()
