@@ -8,21 +8,24 @@ from dotenv import load_dotenv
 from twilio.rest import Client
 
 TIMEOUT = 300
-
-load_dotenv('secrets.env')
-accountSid = getenv('accountSID')
-authToken = getenv('authToken')
-myTwilioNumber = getenv('myTwilioNumber')
-destCellPhone = getenv('destNumber')
-
-if not accountSid or not authToken or not myTwilioNumber or not destCellPhone:
-    print('Invalid "secrets.env". Please verify and try again.')
-    exit(1)
-
-twilioClient = Client(accountSid, authToken)
+twilioClient = None
 
 
 def scan(home, params, sendmsg=False):
+    if sendmsg:
+        load_dotenv('secrets.env')
+        accountSid = getenv('accountSID')
+        authToken = getenv('authToken')
+        myTwilioNumber = getenv('myTwilioNumber')
+        destNumber = getenv('destNumber')
+
+        if not accountSid or not authToken or not myTwilioNumber or not destNumber:
+            print('Invalid "secrets.env". Please verify and try again.')
+            exit(1)
+
+        global twilioClient
+        twilioClient = Client(accountSid, authToken)
+
     try:
         while True:
             try:
@@ -42,7 +45,7 @@ def scan(home, params, sendmsg=False):
                 if msg:
                     print(msg)
                     if sendmsg:
-                        send_message(msg)
+                        send_message(msg, myTwilioNumber, destNumber)
                 else:
                     print('No vaccination session found')
 
@@ -61,6 +64,5 @@ def scan(home, params, sendmsg=False):
         print('Exiting...')
 
 
-def send_message(msg):
-    twilioClient.messages.create(
-        body=msg, from_=myTwilioNumber, to=destCellPhone)
+def send_message(msg, sender, receiver):
+    twilioClient.messages.create(body=msg, from_=sender, to=receiver)
