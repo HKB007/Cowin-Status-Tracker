@@ -5,6 +5,7 @@ from time import sleep
 
 import requests
 from dotenv import load_dotenv
+from plyer import notification
 from twilio.rest import Client
 
 TIMEOUT = 300
@@ -44,6 +45,8 @@ def scan(home, params, sendmsg=False):
 
                 if msg:
                     print(msg)
+                    toastNotify(
+                        'Some vaccination slots found.\nCheck terminal window and Cowin website.')
                     if sendmsg:
                         send_message(msg, myTwilioNumber, destNumber)
                 else:
@@ -61,8 +64,12 @@ def scan(home, params, sendmsg=False):
                 sleep(TIMEOUT)
 
     except KeyboardInterrupt:
-        print('Exiting...')
+        print('\nExiting...')
 
 
 def send_message(msg, sender, receiver):
     twilioClient.messages.create(body=msg, from_=sender, to=receiver)
+
+
+def toastNotify(msg):
+    notification.notify(title='Cowin Status Tracker', message=msg, timeout=0)
