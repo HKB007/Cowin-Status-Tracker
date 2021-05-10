@@ -1,19 +1,20 @@
 from datetime import date
-from os import getenv
-from sys import exit
 from time import sleep
 
 import requests
-from dotenv import load_dotenv
 from plyer import notification
-from twilio.rest import Client
 
 TIMEOUT = 300
 twilioClient = None
 
 
-def scan(home, params, sendmsg=False):
+def scan(home, params, age, sendmsg=False):
     if sendmsg:
+        from os import getenv
+
+        from dotenv import load_dotenv
+        from twilio.rest import Client
+
         load_dotenv('secrets.env')
         accountSid = getenv('accountSID')
         authToken = getenv('authToken')
@@ -22,7 +23,7 @@ def scan(home, params, sendmsg=False):
 
         if not accountSid or not authToken or not myTwilioNumber or not destNumber:
             print('Invalid "secrets.env". Please verify and try again.')
-            exit(1)
+            return
 
         global twilioClient
         twilioClient = Client(accountSid, authToken)
@@ -40,8 +41,8 @@ def scan(home, params, sendmsg=False):
                 msg = ''
                 for center in centers:
                     for session in center['sessions']:
-                        if session['min_age_limit'] == 18 and session['available_capacity'] > 0:
-                            msg += f"{session['available_capacity']} {session['vaccine']} vaccines available in {center['name']} ({center['pincode']}) on {session['date']}\n"
+                        if session['min_age_limit'] <= age and session['available_capacity'] > 0:
+                            msg += f"{session['available_capacity']} {session['vaccine']} vaccines available for age >= {session['min_age_limit']} in {center['name']} ({center['pincode']}) on {session['date']}\n"
 
                 if msg:
                     print(msg)
@@ -59,7 +60,7 @@ def scan(home, params, sendmsg=False):
                 raise KeyboardInterrupt()
 
             except:
-                print(f'ERROR: Invalid PIN Code / District Name / Request Limit Reached')
+                print(f'ERROR: Request Limit Reached / Network Error')
                 print(f'Sleeping for {TIMEOUT} seconds...')
                 sleep(TIMEOUT)
 
