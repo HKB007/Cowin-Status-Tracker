@@ -4,11 +4,11 @@ from time import sleep
 import requests
 from plyer import notification
 
-TIMEOUT = 300
+TIMEOUT = 60
 twilioClient = None
 
 
-def scan(home, params, age, sendmsg=False):
+def scan(home, params, age, vacname, sendmsg):
     if sendmsg:
         from os import getenv
 
@@ -41,7 +41,7 @@ def scan(home, params, age, sendmsg=False):
                 msg = ''
                 for center in centers:
                     for session in center['sessions']:
-                        if session['min_age_limit'] <= age and session['available_capacity'] > 0:
+                        if session['min_age_limit'] <= age and session['available_capacity'] > 0 and vacname.lower() in session['vaccine'].lower():
                             msg += f"{session['available_capacity']} {session['vaccine']} vaccines available for age >= {session['min_age_limit']} in {center['name']} ({center['pincode']}) on {session['date']}\n"
 
                 if msg:

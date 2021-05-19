@@ -6,11 +6,11 @@ It can also notify about available slots through SMS (optional).
 
 ### Usage
 
-`python district.py statename districtname [-age yourage] [--sms]`
+`python district.py statename districtname [-age yourage] [-v vaccinename] [--sms]`
 
 OR
 
-`python pincode.py pincode [-age yourage] [--sms]`
+`python pincode.py pincode [-age yourage] [-v vaccinename] [--sms]`
 
 Note:
 
@@ -24,7 +24,7 @@ Note:
     For *nix:
     `python3 district.py Delhi 'East Delhi'`
 
-* `-age` argument is optional. Use this to filter results by age.
+* `-age` and `-v` arguments are optional. Use these to filter results by age and vaccine name.
 
     `python pincode.py 123456 -age 25` will search for centers having minimum age <= 25.
 
@@ -32,7 +32,7 @@ Note:
 
 * `--sms` flag is optional. Use this flag to enable sms notifications.
 
-These script will fetch status automatically every 5 minutes and display it on terminal. To exit the script, just press `Ctrl + C`.
+These script will fetch status automatically every 60 seconds and display it on terminal. To exit the script, just press `Ctrl + C`.
 
 ### Enabling SMS Notifications (Optional)
 

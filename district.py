@@ -12,6 +12,8 @@ def parseArguments():
                         help='District name to search for')
     parser.add_argument('-age', metavar='yourage', type=int,
                         required=False, default=float('inf'), help='Your age')
+    parser.add_argument('-v', metavar='vaccinename', type=str,
+                        required=False, default='', help='Vaccine Name')
     parser.add_argument('--sms', required=False, action='store_true',
                         help='Use this flag to enable sms alerts')
     return parser.parse_args()
@@ -23,6 +25,7 @@ def main():
     DISTRICT = args.districtname
     SMS_ENABLE = args.sms
     AGE = args.age
+    VACCINE_NAME = args.v
 
     with open('dist_map.json', 'r', encoding='utf8') as fp:
         MAP = json.load(fp)
@@ -40,7 +43,7 @@ def main():
     HOME = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict'
 
     params = {'district_id': dist_id}
-    scan(HOME, params, age=AGE, sendmsg=SMS_ENABLE)
+    scan(HOME, params, age=AGE, vacname=VACCINE_NAME, sendmsg=SMS_ENABLE)
 
 
 if __name__ == '__main__':
