@@ -6,11 +6,11 @@ It can also notify about available slots through SMS (optional).
 
 ### Usage
 
-`python district.py statename districtname [-age yourage] [-v vaccinename] [--sms]`
+`python district.py statename districtname [-age yourage] [-dose doseno] [-v vaccinename] [--sms]`
 
 OR
 
-`python pincode.py pincode [-age yourage] [-v vaccinename] [--sms]`
+`python pincode.py pincode [-age yourage] [-dose doseno] [-v vaccinename] [--sms]`
 
 Note:
 
@@ -24,7 +24,7 @@ Note:
     For *nix:
     `python3 district.py Delhi 'East Delhi'`
 
-* `-age` and `-v` arguments are optional. Use these to filter results by age and vaccine name.
+* `-age`, `-dose` and `-v` arguments are optional. Use these to filter results by age, dose number and vaccine name.
 
     `python pincode.py 123456 -age 25` will search for centers having minimum age <= 25.
 

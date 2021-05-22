@@ -8,7 +8,12 @@ TIMEOUT = 60
 twilioClient = None
 
 
-def scan(home, params, age, vacname, sendmsg):
+def scan(home, get_params, **kwargs):
+    age = kwargs['age']
+    dose_no = kwargs['dose_no']
+    vacname = kwargs['vacname']
+    sendmsg = kwargs['sendmsg']
+
     if sendmsg:
         from os import getenv
 
@@ -31,10 +36,9 @@ def scan(home, params, age, vacname, sendmsg):
     try:
         while True:
             try:
-                params['date'] = date.today().strftime('%d-%m-%y')
-
+                get_params['date'] = date.today().strftime('%d-%m-%y')
                 user_agent = {'User-Agent': 'Mozilla/5.0'}
-                r = requests.get(home, params=params, headers=user_agent)
+                r = requests.get(home, params=get_params, headers=user_agent)
                 js = r.json()
                 centers = js['centers']
 
@@ -42,7 +46,18 @@ def scan(home, params, age, vacname, sendmsg):
                 for center in centers:
                     for session in center['sessions']:
                         if session['min_age_limit'] <= age and session['available_capacity'] > 0 and vacname.lower() in session['vaccine'].lower():
-                            msg += f"{session['available_capacity']} {session['vaccine']} vaccines available for age >= {session['min_age_limit']} in {center['name']} ({center['pincode']}) on {session['date']}\n"
+                            dose1 = session['available_capacity_dose1'] if dose_no == 1 or dose_no is None else 0
+                            dose2 = session['available_capacity_dose2'] if dose_no == 2 or dose_no is None else 0
+
+                            if dose1 > 0 and dose2 > 0:
+                                dosestr = 'dose 1+2'
+                            elif dose1 > 0:
+                                dosestr = 'dose 1'
+                            elif dose2 > 0:
+                                dosestr = 'dose 2'
+                            else:
+                                continue
+                            msg += f"{dose1 + dose2} {session['vaccine']} vaccines ({dosestr}) available for age >= {session['min_age_limit']} in {center['name']} ({center['pincode']}) on {session['date']}\n"
 
                 if msg:
                     print(msg)
