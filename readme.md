@@ -6,11 +6,11 @@ It can also notify about available slots through SMS (optional).
 
 ### Usage
 
-`python district.py statename districtname [-age yourage] [-dose doseno] [-v vaccinename] [--sms]`
+`python district.py statename districtname [-age yourage] [-dose dosenumber] [-v vaccinename] [--sms]`
 
 OR
 
-`python pincode.py pincode [-age yourage] [-dose doseno] [-v vaccinename] [--sms]`
+`python pincode.py pincode [-age yourage] [-dose dosenumber] [-v vaccinename] [--sms]`
 
 Note:
 
