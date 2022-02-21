@@ -24,7 +24,7 @@ def parseArguments():
     )
     parser.add_argument(
         "-v",
-        metavar="vaccinename",
+        metavar="vaccin-Harsh-ename",
         type=str,
         required=False,
         default="",
